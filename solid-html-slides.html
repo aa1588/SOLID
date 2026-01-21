@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLID Principles in Java</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-header {
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .slide-title {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.3em;
+            color: #718096;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .code-box {
+            border-radius: 12px;
+            padding: 25px;
+            border: 3px solid;
+        }
+
+        .violation {
+            background: #fff5f5;
+            border-color: #fc8181;
+        }
+
+        .solution {
+            background: #f0fff4;
+            border-color: #68d391;
+        }
+
+        .box-header {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .violation .box-header {
+            color: #c53030;
+        }
+
+        .solution .box-header {
+            color: #2f855a;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .violation .explanation {
+            border-left: 4px solid #fc8181;
+        }
+
+        .solution .explanation {
+            border-left: 4px solid #68d391;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #667eea;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        .counter {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .intro-content {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .intro-emoji {
+            font-size: 120px;
+            margin-bottom: 30px;
+        }
+
+        .intro-text {
+            font-size: 1.3em;
+            color: #4a5568;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        .principles-list {
+            display: grid;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .principle-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .recap-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .recap-card {
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .recap-card .emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .recap-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .recap-card p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .benefits {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            grid-column: span 2;
+        }
+
+        .benefits h3 {
+            font-size: 2em;
+            margin-bottom: 25px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            font-size: 1.1em;
+        }
+
+        .icon {
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @media print {
+            .slide {
+                display: block !important;
+                page-break-after: always;
+                height: auto;
+                box-shadow: none;
+            }
+            .controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1 class="slide-title">SOLID Principles</h1>
+                <p class="slide-subtitle">Building Better Object-Oriented Code</p>
+            </div>
+            <div class="intro-content">
+                <div class="intro-emoji">🏗️</div>
+                <p class="intro-text">
+                    SOLID is an acronym for five design principles that make software more maintainable, flexible, and scalable. These principles help you write clean, robust code that stands the test of time.
+                </p>
+                <div class="principles-list">
+                    <div class="principle-item">S - Single Responsibility Principle</div>
+                    <div class="principle-item">O - Open/Closed Principle</div>
+                    <div class="principle-item">L - Liskov Substitution Principle</div>
+                    <div class="principle-item">I - Interface Segregation Principle</div>
+                    <div class="principle-item">D - Dependency Inversion Principle</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Single Responsibility -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">S - Single Responsibility Principle</h1>
+                <p class="slide-subtitle">A class should have only one reason to change</p>
+            </div>
+            <div class="content-grid">
+                <div class="code-box violation">
+                    <div class="box-header">
+                        <span class="icon">❌</span> VIOLATION
+                    </div>
+                    <pre>public class Employee {
+    private String name;
+    private double salary;
+    
+    // Business logic
+    public void calculatePay() {
+        // Calculate salary
+    }
+    
+    // Database operations
+    public void saveToDatabase() {
+        // Save employee to DB
+    }
+    
+    // Reporting
+    public void generateReport() {
+        // Generate employee report
+    }
+}</pre>
+                    <div class="explanation">
+                        This class has <strong>THREE reasons to change</strong>: pay calculation logic, database schema changes, and report format changes. This violates SRP.
+                    </div>
+                </div>
+
+                <div class="code-box solution">
+                    <div class="box-header">
+                        <span class="icon">✅</span> SOLUTION
+                    </div>
+                    <pre>public class Employee {
+    private String name;
+    private double salary;
+    // Getters/Setters only
+}
+
+public class PayrollCalculator {
+    public void calculatePay(Employee emp) {
+        // Calculate salary
+    }
+}
+
+public class EmployeeRepository {
+    public void save(Employee emp) {
+        // Save to DB
+    }
+}
+
+public class EmployeeReporter {
+    public void generateReport(Employee emp) {
+        // Generate report
+    }
+}</pre>
+                    <div class="explanation">
+                        Each class now has <strong>ONE clear responsibility</strong> and only one reason to change. This makes the code more maintainable and testable.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Open/Closed -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">O - Open/Closed Principle</h1>
+                <p class="slide-subtitle">Open for extension, closed for modification</p>
+            </div>
+            <div class="content-grid">
+                <div class="code-box violation">
+                    <div class="box-header">
+                        <span class="icon">❌</span> VIOLATION
+                    </div>
+                    <pre>public class AreaCalculator {
+    public double calculateArea(Object shape) {
+        if (shape instanceof Circle) {
+            Circle circle = (Circle) shape;
+            return Math.PI * circle.radius 
+                   * circle.radius;
+        } else if (shape instanceof Rectangle) {
+            Rectangle rect = (Rectangle) shape;
+            return rect.width * rect.height;
+        }
+        // Need to MODIFY this method
+        // for each new shape!
+        return 0;
+    }
+}</pre>
+                    <div class="explanation">
+                        Adding a new shape (Triangle, Square, etc.) requires <strong>modifying existing code</strong>. This breaks the Open/Closed Principle and increases the risk of bugs.
+                    </div>
+                </div>
+
+                <div class="code-box solution">
+                    <div class="box-header">
+                        <span class="icon">✅</span> SOLUTION
+                    </div>
+                    <pre>public interface Shape {
+    double calculateArea();
+}
+
+public class Circle implements Shape {
+    private double radius;
+    
+    public double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+public class Rectangle implements Shape {
+    private double width, height;
+    
+    public double calculateArea() {
+        return width * height;
+    }
+}
+
+public class Triangle implements Shape {
+    private double base, height;
+    
+    public double calculateArea() {
+        return 0.5 * base * height;
+    }
+}</pre>
+                    <div class="explanation">
+                        Now you can <strong>add new shapes without modifying existing code</strong>! Just create a new class implementing Shape. The system is open for extension, closed for modification.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Liskov Substitution -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">L - Liskov Substitution Principle</h1>
+                <p class="slide-subtitle">Subtypes must be substitutable for their base types</p>
+            </div>
+            <div class="content-grid">
+                <div class="code-box violation">
+                    <div class="box-header">
+                        <span class="icon">❌</span> VIOLATION
+                    </div>
+                    <pre>public class Bird {
+    public void fly() {
+        System.out.println("Flying...");
+    }
+}
+
+public class Penguin extends Bird {
+    @Override
+    public void fly() {
+        throw new UnsupportedOperationException(
+            "Penguins can't fly!"
+        );
+    }
+}
+
+// Usage problem:
+Bird bird = new Penguin();
+bird.fly(); // CRASH! 💥</pre>
+                    <div class="explanation">
+                        Penguin <strong>breaks the contract</strong> of Bird. You cannot substitute a Penguin wherever a Bird is expected without unexpected behavior or exceptions.
+                    </div>
+                </div>
+
+                <div class="code-box solution">
+                    <div class="box-header">
+                        <span class="icon">✅</span> SOLUTION
+                    </div>
+                    <pre>public abstract class Bird {
+    public abstract void move();
+}
+
+public class FlyingBird extends Bird {
+    public void move() {
+        fly();
+    }
+    
+    private void fly() {
+        System.out.println("Flying...");
+    }
+}
+
+public class Penguin extends Bird {
+    public void move() {
+        swim();
+    }
+    
+    private void swim() {
+        System.out.println("Swimming...");
+    }
+}
+
+// Usage works perfectly:
+Bird bird1 = new FlyingBird();
+Bird bird2 = new Penguin();
+bird1.move(); // Flying...
+bird2.move(); // Swimming...</pre>
+                    <div class="explanation">
+                        Both subtypes now <strong>correctly fulfill the Bird contract</strong>. You can substitute any Bird subtype without breaking the application.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Interface Segregation -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">I - Interface Segregation Principle</h1>
+                <p class="slide-subtitle">Clients shouldn't depend on interfaces they don't use</p>
+            </div>
+            <div class="content-grid">
+                <div class="code-box violation">
+                    <div class="box-header">
+                        <span class="icon">❌</span> VIOLATION
+                    </div>
+                    <pre>public interface Worker {
+    void work();
+    void eat();
+    void sleep();
+}
+
+public class HumanWorker implements Worker {
+    public void work() { /* work */ }
+    public void eat() { /* eat */ }
+    public void sleep() { /* sleep */ }
+}
+
+public class RobotWorker implements Worker {
+    public void work() { /* work */ }
+    
+    public void eat() {
+        // Robots don't eat!
+        throw new UnsupportedOperationException();
+    }
+    
+    public void sleep() {
+        // Robots don't sleep!
+        throw new UnsupportedOperationException();
+    }
+}</pre>
+                    <div class="explanation">
+                        RobotWorker is <strong>forced to implement methods it doesn't need</strong>. This creates a "fat interface" that doesn't make sense for all implementations.
+                    </div>
+                </div>
+
+                <div class="code-box solution">
+                    <div class="box-header">
+                        <span class="icon">✅</span> SOLUTION
+                    </div>
+                    <pre>public interface Workable {
+    void work();
+}
+
+public interface Eatable {
+    void eat();
+}
+
+public interface Sleepable {
+    void sleep();
+}
+
+public class HumanWorker 
+    implements Workable, Eatable, Sleepable {
+    public void work() { /* work */ }
+    public void eat() { /* eat */ }
+    public void sleep() { /* sleep */ }
+}
+
+public class RobotWorker implements Workable {
+    public void work() { /* work */ }
+    // No need to implement eat() or sleep()!
+}</pre>
+                    <div class="explanation">
+                        Classes now <strong>implement only the interfaces they actually need</strong>. This creates more flexible and maintainable code with smaller, focused interfaces.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Dependency Inversion -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">D - Dependency Inversion Principle</h1>
+                <p class="slide-subtitle">Depend on abstractions, not concretions</p>
+            </div>
+            <div class="content-grid">
+                <div class="code-box violation">
+                    <div class="box-header">
+                        <span class="icon">❌</span> VIOLATION
+                    </div>
+                    <pre>public class MySQLDatabase {
+    public void save(String data) {
+        System.out.println("Saving to MySQL");
+    }
+}
+
+public class UserService {
+    private MySQLDatabase database;
+    
+    public UserService() {
+        // Tightly coupled to MySQL!
+        this.database = new MySQLDatabase();
+    }
+    
+    public void saveUser(String user) {
+        database.save(user);
+    }
+}
+
+// Cannot switch to PostgreSQL or MongoDB
+// without changing UserService!</pre>
+                    <div class="explanation">
+                        High-level UserService <strong>depends directly on low-level MySQLDatabase</strong>. This tight coupling makes it hard to test and impossible to switch databases.
+                    </div>
+                </div>
+
+                <div class="code-box solution">
+                    <div class="box-header">
+                        <span class="icon">✅</span> SOLUTION
+                    </div>
+                    <pre>public interface Database {
+    void save(String data);
+}
+
+public class MySQLDatabase implements Database {
+    public void save(String data) {
+        System.out.println("Saving to MySQL");
+    }
+}
+
+public class MongoDatabase implements Database {
+    public void save(String data) {
+        System.out.println("Saving to MongoDB");
+    }
+}
+
+public class UserService {
+    private Database database;
+    
+    // Dependency injection!
+    public UserService(Database database) {
+        this.database = database;
+    }
+    
+    public void saveUser(String user) {
+        database.save(user);
+    }
+}
+
+// Easy to switch databases:
+UserService service = 
+    new UserService(new MySQLDatabase());
+UserService service2 = 
+    new UserService(new MongoDatabase());</pre>
+                    <div class="explanation">
+                        Now UserService <strong>depends on the Database abstraction</strong>. Easy to test with mocks, and you can swap implementations without changing UserService!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Recap -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1 class="slide-title">SOLID Recap</h1>
+                <p class="slide-subtitle">Why It Matters</p>
+            </div>
+            <div class="recap-grid">
+                <div class="recap-card" style="background: #ebf8ff;">
+                    <div class="emoji">S</div>
+                    <h3>Single Responsibility</h3>
+                    <p>One class, one job, one reason to change. Keep it focused and simple.</p>
+                </div>
+                
+                <div class="recap-card" style="background: #faf5ff;">
+                    <div class="emoji">O</div>
+                    <h3>Open/Closed</h3>
+                    <p>Extend behavior without modifying existing code. Add features safely.</p>
+                </div>
+                
+                <div class="recap-card" style="background: #f0fff4;">
+                    <div class="emoji">L</div>
+                    <h3>Liskov Substitution</h3>
+                    <p>Subtypes must be substitutable for base types. Maintain contracts.</p>
+                </div>
+                
+                <div class="recap-card" style="background: #fffff0;">
+                    <div class="emoji">I</div>
+                    <h3>Interface Segregation</h3>
+                    <p>Many specific interfaces beat one general interface. Stay lean.</p>
+                </div>
+                
+                <div class="benefits">
+                    <h3>Benefits of SOLID Principles</h3>
+                    <div class="benefits-grid">
+                        <div>✅ Maintainable</div>
+                        <div>✅ Testable</div>
+                        <div>✅ Flexible</div>
+                        <div>✅ Scalable</div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1.1em;">
+                        Follow these principles to write clean, professional code that's easy to understand, modify, and extend!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <div class="dots" id="dotsContainer"></div>
+        <span class="counter" id="counter">1 / 7</span>
+        <button id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+            document.getElementById('counter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+            updateDots();
+        }
+
+        function changeSlide(n) {
+            showSlide(currentSlide + n);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function createDots() {
+            const container = document.getElementById('dotsContainer');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.onclick = () => goToSlide(i);
+                container.appendChild(dot);
+            }
+            updateDots();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        createDots();
+        showSlide(0);
+    </script>
+</body>
+</html>
